@@ -1,3 +1,6 @@
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
+
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
   pub val: i32,
@@ -14,11 +17,43 @@ impl ListNode {
   }
 }
 
+impl PartialOrd<ListNode> for ListNode {
+    fn partial_cmp(&self, other: &ListNode) -> Option<Ordering> {
+        other.val.partial_cmp(&self.val)
+    }
+}
+
+impl Ord for ListNode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.val.cmp(&self.val)
+    }
+}
+
 pub struct Solution {}
 
 impl Solution {
     pub fn merge_k_lists(lists: Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
-        return Solution::merge_lists_by_destructuring(&lists);
+        // return Solution::merge_lists_by_destructuring(&lists);
+        return Solution::merge_lists_by_binary_heap(&lists);
+    }
+
+    pub fn merge_lists_by_binary_heap(lists: &Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {
+        let mut heap = BinaryHeap::new();
+        for node in lists {
+            if node.is_some() {
+                heap.push(node.to_owned().take()?)
+            }
+        }
+        let mut head = heap.pop()?;
+        let mut pointer = &mut head;
+        while !heap.is_empty() {
+            if pointer.next.is_some() {
+                heap.push(pointer.next.take()?);
+            }
+            pointer.next = Some(heap.pop()?);
+            pointer = pointer.next.as_mut()?;
+        }
+        Some(head)
     }
 
     fn merge_lists_by_destructuring(lists: &Vec<Option<Box<ListNode>>>) -> Option<Box<ListNode>> {

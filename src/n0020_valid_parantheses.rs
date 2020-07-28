@@ -4,7 +4,8 @@ pub struct Solution {}
 
 impl Solution {
     pub fn is_valid(s: String) -> bool {
-        return Solution::is_valid_via_replace(&s);
+        return Solution::is_valid_via_stack(&s);
+        // return Solution::is_valid_via_replace(&s);
     }
 
     fn is_valid_via_replace(s: &String) -> bool {
